@@ -1,0 +1,18 @@
+﻿{% extends "layout.html" %}
+
+{% block content %}
+
+<h2>{{ title }}.</h2>
+<h3>{{ message }}</h3>
+
+<p>Chiudi il contesto attivo... </p>
+<p>
+    
+    <form method="post" {{visible}}>
+        <input type="text" placeholder="Chiudere" name="descrizione" required autofocus/>
+        <button type='submit'>Chiudi</button>
+    </form>
+</p>
+
+
+{% endblock %}
