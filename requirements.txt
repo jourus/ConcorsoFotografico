@@ -1,5 +1,4 @@
 flask
-pip==20.1.1
 click==7.1.2
 Flask-SQLAlchemy==2.4.3
 itsdangerous==1.1.0

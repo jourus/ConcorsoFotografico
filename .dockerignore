@@ -1,3 +1,5 @@
 venv/
 Concorso/__pycache__/
 .dockerignore
+.gitignore
+.vscode
