@@ -6,6 +6,19 @@
 <h3>{{ message }}</h3>
 
 
+<form action="">
+    <label for="contests">Scegli evento:</label>
+    <select name="contest_list" id="id_contest_list">
+        {% for item in body_contests %}
+        <option value="{{item[0]}}" {{item[3]}}>{{item[1]}}&nbsp;({{item[2]}})</option>
+        {% endfor %}
+    </select>
+    <input type="submit" value="Visualizza">
+    <br><br>
+</form>
+
+
+
 <table>
     <thead><tr><td>Fotografo</td><td>Voto</td></tr></thead>
     <tbody>

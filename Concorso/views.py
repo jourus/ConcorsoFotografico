@@ -13,7 +13,7 @@ import sys
 
 sys.path.append("Concorso")  
 
-from control import add_vote, calcola_classifica, get_active_contest, create_contest, get_active_cookie, close_active_contest
+from control import add_vote, calcola_classifica, get_active_contest, create_contest, get_active_cookie, close_active_contest, get_elenco_contest, represents_int
 
 @app.route('/')
 @app.route('/home')
@@ -101,6 +101,27 @@ def vote(choice=""):
 def classifica():
     """Renders the hit page."""
 
+    id_contest = request.args.get('contest_list')
+
+
+    if not represents_int(id_contest):
+        id_contest = get_active_contest()
+    
+    if  id_contest == None:
+        id_contest = '0'
+
+
+    imposta_selezione = lambda r: (r[0], r[1], r[2], 'selected') if r[0]==int(id_contest) else (r[0], r[1], r[2], '')
+
+    elenco = get_elenco_contest()
+    
+   
+    body_contests = list(map(imposta_selezione, elenco))
+
+    
+    app.logger.warning(id_contest)
+
+    app.logger.warning(body_contests)
     app.logger.debug(calcola_classifica())
 
     return render_template(
@@ -108,7 +129,8 @@ def classifica():
         title='Classifica',
         year=datetime.now().year,
         message='Classifica della competizione',
-        body_classifica = calcola_classifica()
+        body_classifica = calcola_classifica(id_contest),
+        body_contests =  body_contests
     )
 
 

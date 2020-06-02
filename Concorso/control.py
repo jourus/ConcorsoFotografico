@@ -1,6 +1,6 @@
 # coding=latin-1
 
-import sys
+# import sys
 
 #sys.path.append("C:\\Users\\jouru\\source\\repos\\FlaskWebProject1\\FlaskWebProject1\\ConcorsoFotografico2020\\")  
 # sys.path.append("")
@@ -98,26 +98,44 @@ def new_cookie():
     return f"Vote_{token_urlsafe()}"
 
     
-def stampa_classifica(contest_id=None):
-    """
-        Prepara l'html del body della tabella della classifica.
-        Per puro divertimento, uso due volte la map per applicare tale formattazione.
 
-        Richiede l'id del contest, se non viene passato, prende quello attivo.
+def get_elenco_contest():
+    return db.session.query(Contest.id, Contest.descrizione, Contest.stato).all()
+    # for riga in lista:
+    #     print(riga.id, riga.descrizione, riga.stato)
 
-    """
 
-    if contest_id == None:
-        contest_id = get_active_contest()
+def represents_int(s):
+    if s == None:
+        return False
 
-    # richiamo il calcolo della classifica
-    risultati = calcola_classifica(contest_id)
+    try: 
+        int(s)
+        return True
+    except ValueError:
+        return False
 
-    # mini funzione per formattare tutte le celle di una riga
-    def cell(z): return f"<td>{z}<\\td>"
+
+# def stampa_classifica(contest_id=None):
+#     """
+#         Prepara l'html del body della tabella della classifica.
+#         Per puro divertimento, uso due volte la map per applicare tale formattazione.
+
+#         Richiede l'id del contest, se non viene passato, prende quello attivo.
+
+#     """
+
+#     if contest_id == None:
+#         contest_id = get_active_contest()
+
+#     # richiamo il calcolo della classifica
+#     risultati = calcola_classifica(contest_id)
+
+#     # mini funzione per formattare tutte le celle di una riga
+#     def cell(z): return f"<td>{z}<\\td>"
     
-    # mini funzione per formattare le righe (usando la funzione cell)
-    def row(r): return f"<tr>{''.join(map(cell,r))}<\\tr>\n"
+#     # mini funzione per formattare le righe (usando la funzione cell)
+#     def row(r): return f"<tr>{''.join(map(cell,r))}<\\tr>\n"
 
-    # join finale
-    return ''.join(map(row, risultati))
+#     # join finale
+#     return ''.join(map(row, risultati))
