@@ -5,8 +5,6 @@ import sys
 import os
 
 
-sys.path.append('Concorso')
-
 from os import environ
 from Concorso import app
 

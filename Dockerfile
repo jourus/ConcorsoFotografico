@@ -1,4 +1,5 @@
-FROM buildpack-deps:buster
+# FROM buildpack-deps:buster
+FROM python:3.8.3-slim-buster
 
 LABEL Author = Gianfranco
 LABEL E-mail = "gianfranco.ferracci@gmail.com"

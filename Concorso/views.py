@@ -11,9 +11,9 @@ from Concorso import app
 import sys  
    
 
-sys.path.append("Concorso")  
+# sys.path.append("Concorso")  
 
-from control import add_vote, calcola_classifica, get_active_contest, create_contest, get_active_cookie, close_active_contest, get_elenco_contest, represents_int
+from Concorso.control import add_vote, calcola_classifica, get_active_contest, create_contest, get_active_cookie, close_active_contest, get_elenco_contest, represents_int
 
 @app.route('/')
 @app.route('/home')
