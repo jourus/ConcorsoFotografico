@@ -1,11 +1,32 @@
 ﻿{% extends "layout.html" %}
 
 {% block content %}
-
+<div id="contenitore">
+    <h1> Confermi il tuo voto per {{scelta}}? </h1>
 <h2>{{ title }}.</h2>
 <h3>{{ message }}</h3>
 
 
-<p>Grazie per aver votato.</p>
-<p>Il responso dei cookie è: {{cookie_msg}}</p>
+<a href="/no_vote/" class="btn btn-lg btn-info" role="button">&nbsp;&nbsp;&nbsp;Annullare&nbsp;&nbsp;&nbsp;</a>
+
+
+<button id="pulsante" class="btn btn-lg btn-success">&nbsp;&nbsp;&nbsp;Confermo&nbsp;&nbsp;&nbsp;</button>
+
+
+<div id="div1"></div>
+
+<input type="text" id="scelta" value="{{scelta}}" hidden>
+
+<script>
+    vote = $("#scelta").val()
+    $(document).ready(function(){
+      $("#pulsante").click(function(){
+        $.ajax({url: "/voted/" + vote, success: function(result){
+          $("#contenitore").html(result);
+        }});
+      });
+    });
+</script>
+
+</div>
 {% endblock %}

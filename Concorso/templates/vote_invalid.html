@@ -1,0 +1,20 @@
+﻿{% extends "layout.html" %}
+
+{% block content %}
+
+<h2>{{ title }}.</h2>
+
+{% if status == "red" %}
+<div class="alert alert-danger">
+   <strong>{{ message }}</strong>
+</div>
+
+{% else %}
+<div class="alert alert-info">
+    {{ message }}
+ </div>
+{% endif %}
+
+{% endblock %}
+
+

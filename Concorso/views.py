@@ -1,11 +1,11 @@
-# coding=latin-1
+# -*- coding: utf-8 -*-
 
 """
 Routes and views for the flask application.
 """
 
 from datetime import datetime
-from flask import render_template, request, make_response
+from flask import render_template, request, make_response, redirect
 from sqlalchemy import func
 from Concorso import app
 import sys  
@@ -49,51 +49,115 @@ def about():
 @app.route('/vote/<choice>')
 def vote(choice=""):
     """Renders the vote page."""
-    
+    invalid_vote = { 'template_name_or_list': 'vote_invalid.html',
+                           'title': u'Il voto non è andato a buon fine',
+                            'year': datetime.now().year,
+                            'message': 'Grazie per il tuo tentativo, ma non hai espresso \
+                                nessuna preferenza, ritenta!',
+                            'status': 'grey'}
+
+
     # Se non e' stato inserito nessun voto, non fa nulla ed esce.
     if choice == "":
-        return render_template(
-                'vote.html',
-                title='Votazione',
-                year=datetime.now().year,
-                message= 'Non hai scelto nessuno, ritenta!',
-                cookie_msg = ""
-                )
+        invalid_vote['message'] = 'Grazie per il tuo tentativo, ma non hai \
+                        espresso nessuna preferenza, ritenta!'
+        return render_template(**invalid_vote)
 
+
+    #  In questo caso, è stato espresso un voto.
     my_message = f"Hai scelto la foto di {choice}!"
     
+    # Recupero il token del cookie del contest corrente, serve per 
+    # verificare se è stato espresso un voto
     active_cookie = get_active_cookie()
 
+    # se non c'è alcun contest, termina
+    if active_cookie == "":
+        invalid_vote['message'] = "Grazie per il tuo tentativo, ma c'è alcun \
+                        contest attivo in questo momento. Riprova più tardi."
+        return render_template(**invalid_vote)
+
+
+    # Recupero il valore del cookie del contest corrente per capire se è già 
+    # stato impostato
     the_cookie = request.cookies.get(active_cookie)
     
     app.logger.info("Il contenuto del cookie e' %s", the_cookie)
 
-  
-
     if the_cookie == "" or the_cookie == None:
-        my_cookie_msg = f"Grazie per aver votato, se sei amico di {choice}, fatti offrire una birra."
-        add_vote(choice)
 
         # inserire la chiamata a DB per votare. se fallisce, il valore del cookie da impostare rimane vuoto
-        
-        the_cookie = "votato"
+
+        return render_template(
+            'vote.html',
+            title='Votazione',
+            year=datetime.now().year,
+            message=my_message,
+            cookie_msg = the_cookie,
+            scelta=choice
+            )
+
+
     else:
-        my_cookie_msg = "Grazie per la tua preferenza, ma avevi gia' votato e si puo' concedere un solo voto per persona."
+        invalid_vote['message'] = "Grazie per il tuo tentativo, ma hai \
+                                già votato ed è concesso un solo voto."
+        return render_template(**invalid_vote)
+
+
         
     
-    resp = make_response(render_template(
-        'vote.html',
-        title='Votazione',
+@app.route("/no_vote/")
+def no_vote():
+    """Renders the no_vote page."""
+    return render_template(
+        'vote_invalid.html',
+        title='Voto non effettuato',
         year=datetime.now().year,
-        message=my_message,
-        cookie_msg = the_cookie
-        ))
+        message='Puoi ancora votare.'
+    )
 
+@app.route("/voted/<scelta>")
+def voted(scelta):
+
+    request_parm = {'template_name_or_list': 'vote_esito.html',
+                           'title': u'Il voto non è andato a buon fine',
+                           'message': u'Errore generico',
+                            'year': datetime.now().year,
+                            'status': 'grey'}
+
+    # verificare se è stato espresso un voto
+    active_cookie = get_active_cookie()
+
+    # se non c'è alcun contest, termina
+    if active_cookie == "":
+        request_parm["message"] = f"Spiacente, al momento non c'è alcuna \
+                    votazione attiva."
+        request_parm["status"] = "red"
+        return render_template(**request_parm)
+
+    # Recupero il valore del cookie del contest corrente per capire se è già 
+    # stato impostato
+    the_cookie = request.cookies.get(active_cookie)
     
-    if the_cookie:
-        resp.set_cookie(active_cookie, the_cookie, max_age=60*60*24*30)       
+    app.logger.info("Il contenuto del cookie e' %s", the_cookie)
 
-    return resp
+    if the_cookie == "" or the_cookie == None:
+        add_vote(scelta)
+
+        request_parm["title"]=f'Grazie per aver votato'
+        request_parm["message"]=f'La tua scelta è stata {scelta}'
+        request_parm["status"]  = "green"
+        resp = make_response(render_template(**request_parm))
+
+        resp.set_cookie(active_cookie, "votato", max_age=60*60*24*30)   
+
+        return resp
+    else:
+        request_parm["message"] ="Grazie per il tuo tentativo, ma hai \
+                                già votato ed è concesso un solo voto."
+        request_parm["status"]  = "red"
+        return render_template(**request_parm)
+
 
 
 
@@ -132,6 +196,8 @@ def classifica():
         body_classifica = calcola_classifica(id_contest),
         body_contests =  body_contests
     )
+
+
 
 
 @app.route('/new_contest/', methods=['GET', 'POST'])

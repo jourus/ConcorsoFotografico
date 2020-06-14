@@ -1,0 +1,19 @@
+﻿<h2>{{ title }}.</h2>
+<p>Grazie per aver votato!</p>
+
+
+{% if status == "red" %}
+<div class="alert alert-danger" style="font-size: large;">
+    {{ message }}
+</div>
+
+{% elif status == "green" %}
+<div class="alert alert-success" style="font-size: large;">
+    {{ message }}
+</div>
+{% else %}
+<div class="alert alert-info" style="font-size: large;">
+    {{ message }}
+</div>
+{% endif %}
+
