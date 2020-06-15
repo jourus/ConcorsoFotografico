@@ -5,22 +5,22 @@
 <h2>{{ title }}.</h2>
 <h3>{{ message }}</h3>
 
-
+<div>
 <form action="">
-    <label for="contests">Scegli evento:</label>
-    <select name="contest_list" id="id_contest_list">
+    <!-- <label for="contests">Evento:</label> -->
+    <select name="contest_list" id="id_contest_list" class="selectpicker">
         {% for item in body_contests %}
         <option value="{{item[0]}}" {{item[3]}}>{{item[1]}}&nbsp;({{item[2]}})</option>
         {% endfor %}
     </select>
-    <input type="submit" value="Visualizza">
+    <input type="submit" value="Visualizza" class="btn btn-primary">
     <br><br>
 </form>
-
+</div>
 
 
 <table class="table">
-    <thead><tr><td scope="col">#</td><td scope="col">Fotografo</td><td scope="col">Voto</td></tr></thead>
+    <thead><tr><th scope="col">#</th><th scope="col">Fotografo</th><th scope="col">Voto</th></tr></thead>
     <tbody>
         {% for item in body_classifica %}
         <tr><td>{{item[0]}}</td><td>{{item[1]}}</td><td>{{item[2]}}</td></tr>
