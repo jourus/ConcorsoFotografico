@@ -60,7 +60,7 @@ def calcola_classifica(contest_id=None):
         :param contest_id: Rappresenta l'id del contest di cui preparare la 
                   classifica. Se non viene passato, viene assegnato in 
                   automatico quello del contest attivo.
-        :return:
+        :return:  classifica del contest selezionato
     """
     
     conteggio = func.count(Voti.voto)
@@ -68,7 +68,15 @@ def calcola_classifica(contest_id=None):
     if contest_id==None:
         contest_id = get_active_contest()
 
-    return db.session.query(Voti.voto, conteggio).filter(Voti.id_contest == contest_id).group_by(Voti.voto).order_by(conteggio.desc(), Voti.voto).all()
+    classifica =  db.session.query(Voti.voto, conteggio).filter(
+            Voti.id_contest == contest_id).group_by(Voti.voto).order_by(
+            conteggio.desc(), Voti.voto).all()
+    
+    # Aggiungo l'id progressivo della riga della classifica
+    for id in range(0, len(classifica)):
+        classifica[id] = (id + 1, classifica[id][0], classifica[id][1])
+    
+    return classifica
 
 
 def get_active_cookie():

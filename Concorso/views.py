@@ -174,15 +174,15 @@ def classifica():
     if  id_contest == None:
         id_contest = '0'
 
-
-    imposta_selezione = lambda r: (r[0], r[1], r[2], 'selected') if r[0]==int(id_contest) else (r[0], r[1], r[2], '')
-
+    # Recupero l'elenco dei contest attivi
     elenco = get_elenco_contest()
     
-   
+    # Voglio selezionare la classifica che è stata scelta. Ho quindi fatto questa lambda function che aggiunge la voce "selected" accanto al contest scelto. Andrò poi ad applicarla alla classifica.
+    imposta_selezione = lambda r: (r[0], r[1], r[2], 'selected') if r[0]==int(id_contest) else (r[0], r[1], r[2], '')
+    
+    # Applico la mia funzione all'elenco
     body_contests = list(map(imposta_selezione, elenco))
 
-    
     app.logger.warning(id_contest)
 
     app.logger.warning(body_contests)
