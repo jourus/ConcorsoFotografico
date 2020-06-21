@@ -22,7 +22,7 @@ COPY /Concorso/. /app/Concorso
 COPY . /app
 
 # EXPOSE 8000 5000
-EXPOSE 8000 5000
+# EXPOSE 8000 5000
 
 # ENTRYPOINT [ "python3" ]
 # CMD [ "app.py" ]
