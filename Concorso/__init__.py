@@ -5,11 +5,10 @@ The flask application package.
 """
 
 from flask import Flask
-
-
 import logging
 # from flask.logging import default_handler
 
+app = Flask(__name__)
 
 
 # dictConfig= dict(
@@ -30,7 +29,6 @@ import logging
 # )
 
 
-app = Flask(__name__)
 
 # app.logger.removeHandler(default_handler)
 # app.logger.config=dictConfig
