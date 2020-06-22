@@ -34,11 +34,17 @@
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li><a href="{{ url_for('classifica') }}">Classifica</a></li>
+                    
                     <li><a href="{{ url_for('vote') }}">Vote</a></li>
-                    <li><a href="{{ url_for('new_contest') }}">New contest</a></li>
-                    <li><a href="{{ url_for('close_contest') }}">Termina contest corrente</a></li>
-
+                        {% if current_user.is_authenticated %}
+                        <li><a href="{{ url_for('new_contest') }}">New contest</a></li>
+                        <li><a href="{{ url_for('close_contest') }}">Termina contest corrente</a></li>
+                        <li><a href="{{ url_for('classifica') }}">Classifica</a></li>
+                        <li><a href="/logout">Scollegati</a></li>
+                        {% else %}
+                        <li><a href="/login">Accedi</a></li>
+                        {% endif %}
+                    
                 </ul>
             </div>
         </div>

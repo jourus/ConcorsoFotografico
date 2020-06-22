@@ -5,9 +5,13 @@ Routes and views for the flask application.
 """
 
 from datetime import datetime
-from flask import render_template, request, make_response, redirect
+from flask import render_template, request, make_response, redirect, url_for
+from flask_login import login_user, login_required, current_user, logout_user
+# from flask import Flask, render_template, redirect, url_for, request
 from sqlalchemy import func
 from Concorso import app
+from .model import User, db
+
 import sys  
    
 
@@ -201,6 +205,7 @@ def classifica():
 
 
 @app.route('/new_contest/', methods=['GET', 'POST'])
+@login_required
 def new_contest():
     """Renders the hit page."""
    
@@ -244,6 +249,7 @@ def new_contest():
 
 
 @app.route('/close_contest/', methods=['GET', 'POST'])
+@login_required
 def close_contest():
     """Renders the hit page."""
 
@@ -268,3 +274,87 @@ def close_contest():
         )
 
 
+
+
+
+
+# Route for handling the login page logic
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    error = None
+    if request.method == 'POST':
+
+        email = request.form['username']
+        password = request.form['password'] 
+
+        if  email != 'gianfranco.ferracci@gmail.com' or password != 'segretissimo!':
+            error = 'Invalid Credentials. Please try again.'
+        else:
+                user = User.query.get(email)
+                user.authenticated = True
+                db.session.add(user)
+                db.session.commit()
+                login_user(user, remember=True)
+
+                return redirect(url_for('home'))
+
+
+
+    return render_template('login.html', error=error)
+
+
+@app.route("/logout", methods=["GET"])
+@login_required
+def logout():
+    """Logout the current user."""
+    user = current_user
+    user.authenticated = False
+    db.session.add(user)
+    db.session.commit()
+    logout_user()
+    return redirect(url_for('home'))
+
+
+@app.route("/check/", methods=['GET'])
+def check_varie():
+    
+
+    def text_is_logged():
+        if current_user.is_authenticated:
+            return "Login Attiva"
+        else:
+            return "Non Loggato"
+    
+
+    return f"Valore per User; {text_is_logged()}"
+
+
+# @app.route("/login", methods=["GET", "POST"])
+# def login():
+#     """For GET requests, display the login form. 
+#     For POSTS, login the current user by processing the form.
+
+#     """
+#     # print db
+#     form = LoginForm()
+#     if form.validate_on_submit():
+#         user = User.query.get(form.email.data)
+#         if user:
+#             if bcrypt.check_password_hash(user.password, form.password.data):
+#                 user.authenticated = True
+#                 db.session.add(user)
+#                 db.session.commit()
+#                 login_user(user, remember=True)
+#                 return redirect(url_for("bull.reports"))
+#     return render_template("login.html", form=form)
+
+# @app.route("/logout", methods=["GET"])
+# @login_required
+# def logout():
+#     """Logout the current user."""
+#     user = current_user
+#     user.authenticated = False
+#     db.session.add(user)
+#     db.session.commit()
+#     logout_user()
+#     return render_template("logout.html")

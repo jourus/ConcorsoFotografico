@@ -6,6 +6,7 @@ The flask application package.
 
 from flask import Flask
 import logging
+from flask_login import LoginManager
 # from flask.logging import default_handler
 
 app = Flask(__name__)
@@ -61,6 +62,13 @@ logging.basicConfig(filename='demo.log', level=logging.DEBUG)
 #app.config.from_object(ProductionConfig())
 app.config.from_pyfile('settings.cfg', silent=True)
 
+
+# Configure Login
+app.secret_key = app.config['SECRET_KEY']
+login_manager = LoginManager()
+#login_manager.login_view = 'auth.login'
+login_manager.init_app(app)
+
 app.logger.debug('Questo è debug')
 app.logger.info('Questo è info')
 app.logger.warning('Questo è warning')
@@ -69,6 +77,16 @@ app.logger.error('Questo è error')
 
 
 import Concorso.views
+from .model import User
 
 
 
+
+@login_manager.user_loader
+def user_loader(user_id):
+    """Given *user_id*, return the associated User object.
+
+    :param unicode user_id: user_id (email) user to retrieve
+
+    """
+    return User.query.get(user_id)
