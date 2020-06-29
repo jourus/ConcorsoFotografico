@@ -77,3 +77,10 @@ class User(db.Model):
     def is_anonymous(self):
         """False, as anonymous users aren't supported."""
         return False
+    
+    def check_password(self, password):
+        """Verifica che la password sia valida"""
+        return password == self.password;
+            
+        
+

@@ -281,13 +281,17 @@ def close_contest():
 # Route for handling the login page logic
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    """ Verifica le credenziali dell'utente e, se valide, garantisce l'accesso"""
+    
     error = None
     if request.method == 'POST':
 
         email = request.form['username']
         password = request.form['password'] 
 
-        if  email != 'gianfranco.ferracci@gmail.com' or password != 'segretissimo!':
+        user = User.query.filter_by(email=email).first()
+
+        if user == None or not user.check_password(password):
             error = 'Invalid Credentials. Please try again.'
         else:
                 user = User.query.get(email)
