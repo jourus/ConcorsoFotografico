@@ -79,6 +79,16 @@ def calcola_classifica(contest_id=None):
     return classifica
 
 
+def get_contest_data():
+    """
+        Restituisce i dati "operativi" del contest attivo (cookie, max_voti)
+    """
+
+    _contest = get_active_contest()
+
+    return db.session.query(Contest.cookie, Contest.max_voti).filter(Contest.id == _contest).first()
+
+
 def get_active_cookie():
     """
         Restituisce il nome del cookie di salvataggio del voto per il contest attivo.
@@ -113,7 +123,7 @@ def close_active_contest():
     
  
 
-def create_contest(descrizione, data):
+def create_contest(descrizione, data, voti=1):
     """
         Crea un  nuovo contest (se non ce ne sono già di attivi.)
         In tal caso, restituisce una tupla con il messaggio di errore.
@@ -124,7 +134,7 @@ def create_contest(descrizione, data):
         app.logger.warning("Tentativo di creare un nuovo contest quando ce n'è un altro attivo.")
         return False, "Tentativo di creare un nuovo contest quando ce n'è un altro attivo."
 
-    new_contest = Contest(descrizione=descrizione, data_contest=data, stato='attivo', cookie=new_cookie(), ts=datetime.now())
+    new_contest = Contest(descrizione=descrizione, data_contest=data, max_voti=voti, stato='attivo', cookie=new_cookie(), ts=datetime.now())
 
     db.session.add(new_contest)
     db.session.commit()

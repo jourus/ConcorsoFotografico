@@ -11,7 +11,6 @@ db = SQLAlchemy(app)
 
 
 
-
 class Contest(db.Model):
     __tablename__='contest'
     id = db.Column('id', db.Integer, primary_key=True, autoincrement=True)
@@ -20,12 +19,13 @@ class Contest(db.Model):
     stato = db.Column('stato', db.String(10))
     cookie = db.Column('cookie', db.String(50), unique=True)
     ts = db.Column('ts', db.Date)
+    max_voti = db.Column('max_voti', db.Integer, nullable=True, default=0)
     
     voti = db.relationship("Voti", backref="voti")
     
     def __repr__(self):
-        return "<Contest(descrizione='%s', data_contest='%s', stato='%s', cookie='%s', ts='%s')>" % \
-                (self.descrizione, self.data_contest, self.stato, self.cookie, self.ts)
+        return "<Contest(descrizione='%s', data_contest='%s', stato='%s', cookie='%s', ts='%s', max_voti='%s')>" % \
+                (self.descrizione, self.data_contest, self.stato, self.cookie, self.ts, self.max_voti)
 
 
 

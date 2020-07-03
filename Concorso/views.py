@@ -88,7 +88,18 @@ def vote(choice=""):
     
     app.logger.info("Il contenuto del cookie e' %s", the_cookie)
 
+    voti = 0
+
+
     if the_cookie == "" or the_cookie == None:
+        the_cookie="3"
+    
+    try:
+        voti_residui = int(the_cookie)
+    except ValueError as e:
+        app.logger.warning(f"Il cookie conteneva un valore non numerico: {e}")
+
+    if voti_residui > 0:
 
         # inserire la chiamata a DB per votare. se fallisce, il valore del cookie da impostare rimane vuoto
 
@@ -104,7 +115,7 @@ def vote(choice=""):
 
     else:
         invalid_vote['message'] = "Grazie per il tuo tentativo, ma hai \
-                                già votato ed è concesso un solo voto."
+                                terminato i voti a tua disposizione."
         return render_template(**invalid_vote)
 
 
@@ -146,19 +157,45 @@ def voted(scelta):
     app.logger.info("Il contenuto del cookie e' %s", the_cookie)
 
     if the_cookie == "" or the_cookie == None:
+        the_cookie='3'
+    
+    voti_residui = 0
+    app.logger.info("Sono qui 001")
+    try:
+        voti_residui = int(the_cookie)
+        app.logger.info("Sono qui 002")
+        
+    except ValueError as v_err:
+        app.logger.warning(v_err)
+    
+    except e:
+        app.logger.error(e)
+    
+    app.logger.info(f"HEY! Ci sono ancora {voti_residui} voti residui...")
+
+    if voti_residui > 0:
+        voti_residui-=1
         add_vote(scelta)
 
-        request_parm["title"]=f'Grazie per aver votato'
+        # Rendo più carino il messaggio coi voti disponibili.
+        if voti_residui <= 0:
+            request_parm["title"]=f"Grazie per aver votato, questo era l'ultimo voto disponibile. Goditi l'esposizione"
+        elif voti_residui == 1:
+            request_parm["title"]=f'Grazie per aver votato, hai a disposizione ancora un singolo voto'
+        else:
+            request_parm["title"]=f'Grazie per aver votato, hai a disposizione ancora {voti_residui} voti'
+
+        #request_parm["title"]=f'Grazie per aver votato, hai a disposizione ancora {voti_residui} voto/i.'
         request_parm["message"]=f'La tua scelta è stata {scelta}'
         request_parm["status"]  = "green"
         resp = make_response(render_template(**request_parm))
 
-        resp.set_cookie(active_cookie, "votato", max_age=60*60*24*30)   
+        resp.set_cookie(active_cookie, f"{voti_residui}", max_age=60*60*24*30)   
 
         return resp
     else:
         request_parm["message"] ="Grazie per il tuo tentativo, ma hai \
-                                già votato ed è concesso un solo voto."
+                                terminato i voti a tua disposizione."
         request_parm["status"]  = "red"
         return render_template(**request_parm)
 
@@ -226,9 +263,10 @@ def new_contest():
     if request.method =='POST': #creo una nuova votazione
         app.logger.debug(request.form)
         descrizione = request.form['descrizione']
+        max_voti = request.form['max_voti']
 
         msg = f'Post! Hai passato il parametro {descrizione}.'
-        esito, messaggio = create_contest(descrizione=descrizione, data=datetime.now())
+        esito, messaggio = create_contest(descrizione=descrizione, data=datetime.now(),voti=max_voti)
 
         if esito:
             msg="Il nuovo contest e' stato creato, iniziate a votare."
